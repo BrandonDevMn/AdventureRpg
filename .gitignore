@@ -1,0 +1,30 @@
+# Build output
+bin/
+obj/
+
+# .NET
+*.user
+*.suo
+.vs/
+*.dbmdl
+*.jfm
+
+# SQLite database
+*.db
+*.db-shm
+*.db-wal
+
+# Coverage reports
+TestResults/
+coverage-report/
+*.cobertura.xml
+
+# Rider
+.idea/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
