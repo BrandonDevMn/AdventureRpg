@@ -9,6 +9,7 @@ public interface ICharacterService
     Character Create(CreateCharacterRequest request, string userId);
     Character? GetById(Guid id, string userId);
     IEnumerable<Character> GetAll(string userId);
+    bool Delete(Guid id, string userId);
 }
 
 public class CharacterService(AppDbContext db) : ICharacterService
@@ -43,4 +44,17 @@ public class CharacterService(AppDbContext db) : ICharacterService
 
     public IEnumerable<Character> GetAll(string userId) =>
         db.Characters.Where(c => c.UserId == userId).ToList();
+
+    public bool Delete(Guid id, string userId)
+    {
+        var character = db.Characters.FirstOrDefault(c => c.Id == id && c.UserId == userId);
+        if (character is null)
+            return false;
+
+        var items = db.Items.Where(i => i.CharacterId == id).ToList();
+        db.Items.RemoveRange(items);
+        db.Characters.Remove(character);
+        db.SaveChanges();
+        return true;
+    }
 }

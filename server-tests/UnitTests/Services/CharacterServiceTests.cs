@@ -100,4 +100,37 @@ public class CharacterServiceTests
 
         Assert.Empty(all);
     }
+
+    [Fact]
+    public void Delete_OwnedCharacter_RemovesCharacterAndReturnsTrue()
+    {
+        var service = CreateService("char_delete");
+        var created = service.Create(new CreateCharacterRequest { Name = "Doomed", Class = CharacterClass.Warrior }, UserId);
+
+        var result = service.Delete(created.Id, UserId);
+
+        Assert.True(result);
+        Assert.Null(service.GetById(created.Id, UserId));
+    }
+
+    [Fact]
+    public void Delete_CharacterBelongsToOtherUser_ReturnsFalse()
+    {
+        var service = CreateService("char_delete_otheruser");
+        var created = service.Create(new CreateCharacterRequest { Name = "Theirs", Class = CharacterClass.Rogue }, "other-user");
+
+        var result = service.Delete(created.Id, UserId);
+
+        Assert.False(result);
+    }
+
+    [Fact]
+    public void Delete_NonExistentCharacter_ReturnsFalse()
+    {
+        var service = CreateService("char_delete_notfound");
+
+        var result = service.Delete(Guid.NewGuid(), UserId);
+
+        Assert.False(result);
+    }
 }

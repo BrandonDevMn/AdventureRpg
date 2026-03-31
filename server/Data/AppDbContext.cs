@@ -10,6 +10,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
 {
     public DbSet<Character> Characters => Set<Character>();
     public DbSet<Item> Items => Set<Item>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -28,6 +29,14 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
             e.HasKey(i => i.Id);
             e.Property(i => i.Name).IsRequired().HasMaxLength(100);
             e.Property(i => i.Type).HasConversion<string>();
+        });
+
+        modelBuilder.Entity<RefreshToken>(e =>
+        {
+            e.HasKey(r => r.Id);
+            e.Property(r => r.UserId).IsRequired();
+            e.Property(r => r.Token).IsRequired();
+            e.HasIndex(r => r.Token).IsUnique();
         });
     }
 }

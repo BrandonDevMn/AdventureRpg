@@ -33,4 +33,13 @@ public class CharacterController(ICharacterService characterService) : Controlle
 
     [HttpGet]
     public IActionResult GetAll() => Ok(characterService.GetAll(UserId));
+
+    [HttpDelete("{id:guid}")]
+    public IActionResult Delete(Guid id)
+    {
+        var deleted = characterService.Delete(id, UserId);
+        if (!deleted)
+            return NotFound();
+        return NoContent();
+    }
 }

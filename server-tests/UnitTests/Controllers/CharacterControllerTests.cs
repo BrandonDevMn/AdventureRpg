@@ -56,6 +56,26 @@ public class CharacterControllerTests
     }
 
     [Fact]
+    public void Delete_CharacterFound_ReturnsNoContent()
+    {
+        _serviceMock.Setup(s => s.Delete(It.IsAny<Guid>(), UserId)).Returns(true);
+
+        var result = CreateController().Delete(Guid.NewGuid());
+
+        Assert.IsType<NoContentResult>(result);
+    }
+
+    [Fact]
+    public void Delete_CharacterNotFound_ReturnsNotFound()
+    {
+        _serviceMock.Setup(s => s.Delete(It.IsAny<Guid>(), UserId)).Returns(false);
+
+        var result = CreateController().Delete(Guid.NewGuid());
+
+        Assert.IsType<NotFoundResult>(result);
+    }
+
+    [Fact]
     public void GetAll_ReturnsOkWithCharacters()
     {
         var characters = new List<Character>
