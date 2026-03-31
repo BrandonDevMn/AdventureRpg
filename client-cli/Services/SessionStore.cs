@@ -2,7 +2,16 @@ namespace AdventureRpgCli.Services;
 
 public class SessionStore
 {
-    private static readonly string FilePath = Path.Combine(
+    private readonly string _filePath;
+
+    public SessionStore() : this(DefaultFilePath) { }
+
+    internal SessionStore(string filePath)
+    {
+        _filePath = filePath;
+    }
+
+    private static readonly string DefaultFilePath = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
         ".adventurerpg",
         "session");
@@ -11,8 +20,8 @@ public class SessionStore
     {
         try
         {
-            if (!File.Exists(FilePath)) return null;
-            var token = File.ReadAllText(FilePath).Trim();
+            if (!File.Exists(_filePath)) return null;
+            var token = File.ReadAllText(_filePath).Trim();
             return string.IsNullOrEmpty(token) ? null : token;
         }
         catch
@@ -25,8 +34,8 @@ public class SessionStore
     {
         try
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(FilePath)!);
-            File.WriteAllText(FilePath, refreshToken);
+            Directory.CreateDirectory(Path.GetDirectoryName(_filePath)!);
+            File.WriteAllText(_filePath, refreshToken);
         }
         catch { /* best effort */ }
     }
@@ -35,8 +44,8 @@ public class SessionStore
     {
         try
         {
-            if (File.Exists(FilePath))
-                File.Delete(FilePath);
+            if (File.Exists(_filePath))
+                File.Delete(_filePath);
         }
         catch { /* best effort */ }
     }

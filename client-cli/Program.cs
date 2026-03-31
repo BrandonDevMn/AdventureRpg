@@ -13,6 +13,17 @@ var welcome = new WelcomeScreen(api);
 var characterSelect = new CharacterSelectScreen(api);
 var game = new GameScreen(api);
 
+// Health check — fail fast if server is unreachable
+var healthy = await AnsiConsole.Status()
+    .StartAsync("Connecting to server...", _ => api.CheckHealthAsync());
+
+if (!healthy)
+{
+    AnsiConsole.MarkupLine("[red]Cannot reach the server.[/] Make sure it is running and try again.");
+    AnsiConsole.WriteLine();
+    return;
+}
+
 // Try to restore a previous session from disk
 var savedToken = sessionStore.Load();
 if (savedToken is not null)

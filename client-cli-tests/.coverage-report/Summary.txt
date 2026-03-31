@@ -1,0 +1,30 @@
+Summary
+  Generated on: 03/31/2026 - 03:20:13
+  Coverage date: 03/31/2026 - 03:19:55
+  Parser: Cobertura
+  Assemblies: 1
+  Classes: 8
+  Files: 3
+  Line coverage: 88.8%
+  Covered lines: 88
+  Uncovered lines: 11
+  Coverable lines: 99
+  Total lines: 325
+  Branch coverage: 90% (18 of 20)
+  Covered branches: 18
+  Total branches: 20
+  Method coverage: 85% (17 of 20)
+  Full method coverage: 70% (14 of 20)
+  Covered methods: 17
+  Fully covered methods: 14
+  Total methods: 20
+
+client-cli                                88.8%
+  AdventureRpgCli.Models.AuthResponse      100%
+  AdventureRpgCli.Models.CaughtItem        100%
+  AdventureRpgCli.Models.Character         100%
+  AdventureRpgCli.Models.FishingResult     100%
+  AdventureRpgCli.Models.Item              100%
+  AdventureRpgCli.Services.ApiClient      94.4%
+  AdventureRpgCli.Services.ApiException    100%
+  AdventureRpgCli.Services.SessionStore   68.7%

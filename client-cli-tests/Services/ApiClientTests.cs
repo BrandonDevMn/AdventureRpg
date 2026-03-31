@@ -7,6 +7,40 @@ namespace client_cli_tests.Services;
 
 public class ApiClientTests
 {
+    // ── Health ────────────────────────────────────────────────────────────────
+
+    [Fact]
+    public async Task CheckHealthAsync_ServerReachable_ReturnsTrue()
+    {
+        var (client, handler) = ApiClientFactory.Create();
+        handler.Enqueue(HttpStatusCode.OK, new { status = "ok" });
+
+        var result = await client.CheckHealthAsync();
+
+        Assert.True(result);
+    }
+
+    [Fact]
+    public async Task CheckHealthAsync_ServerUnreachable_ReturnsFalse()
+    {
+        var (client, _) = ApiClientFactory.CreateUnreachable();
+
+        var result = await client.CheckHealthAsync();
+
+        Assert.False(result);
+    }
+
+    [Fact]
+    public async Task CheckHealthAsync_ServerReturnsError_ReturnsFalse()
+    {
+        var (client, handler) = ApiClientFactory.Create();
+        handler.EnqueueEmpty(HttpStatusCode.ServiceUnavailable);
+
+        var result = await client.CheckHealthAsync();
+
+        Assert.False(result);
+    }
+
     // ── Auth state ────────────────────────────────────────────────────────────
 
     [Fact]
@@ -238,6 +272,32 @@ public class ApiClientTests
 
         Assert.Single(items);
         Assert.Equal("Perch", items[0].Name);
+    }
+
+    // ── Session restore ───────────────────────────────────────────────────────
+
+    [Fact]
+    public async Task RestoreSessionAsync_ValidToken_ReturnsTrueAndLogsIn()
+    {
+        var (client, handler) = ApiClientFactory.Create();
+        handler.Enqueue(HttpStatusCode.OK, AuthPayload());
+
+        var result = await client.RestoreSessionAsync("saved-refresh-token");
+
+        Assert.True(result);
+        Assert.True(client.IsLoggedIn);
+    }
+
+    [Fact]
+    public async Task RestoreSessionAsync_InvalidToken_ReturnsFalse()
+    {
+        var (client, handler) = ApiClientFactory.Create();
+        handler.EnqueueEmpty(HttpStatusCode.Unauthorized);
+
+        var result = await client.RestoreSessionAsync("bad-token");
+
+        Assert.False(result);
+        Assert.False(client.IsLoggedIn);
     }
 
     // ── Auto-refresh on 401 ───────────────────────────────────────────────────

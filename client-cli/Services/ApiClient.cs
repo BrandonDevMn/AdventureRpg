@@ -27,6 +27,21 @@ public class ApiClient
 
     public bool IsLoggedIn => _accessToken is not null;
 
+    // ── Health ────────────────────────────────────────────────────────────────
+
+    public async Task<bool> CheckHealthAsync()
+    {
+        try
+        {
+            var res = await _http.GetAsync("/v1/health");
+            return res.IsSuccessStatusCode;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     // ── Auth ──────────────────────────────────────────────────────────────────
 
     public async Task<AuthResponse> RegisterAsync(string email, string password)

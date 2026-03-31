@@ -5,7 +5,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 UNIT_TESTS="$SCRIPT_DIR/UnitTests"
 REPORT_DIR="$SCRIPT_DIR/.coverage-report"
 
+dotnet build "$UNIT_TESTS" -q 2>/dev/null
+
 dotnet test "$UNIT_TESTS" \
+  --no-build \
   --settings "$UNIT_TESTS/coverage.runsettings" \
   --collect:"XPlat Code Coverage" \
   --results-directory "$SCRIPT_DIR/.test-results" \
