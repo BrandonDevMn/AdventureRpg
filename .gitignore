@@ -9,6 +9,9 @@ obj/
 *.dbmdl
 *.jfm
 
+# Local dev settings
+appsettings.Development.json
+
 # SQLite database
 *.db
 *.db-shm
