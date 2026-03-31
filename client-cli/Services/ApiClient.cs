@@ -9,10 +9,16 @@ namespace AdventureRpgCli.Services;
 public class ApiClient
 {
     private readonly HttpClient _http;
+    private readonly SessionStore? _sessionStore;
 
-    public ApiClient(string baseUrl) : this(new HttpClient { BaseAddress = new Uri(baseUrl) }) { }
+    public ApiClient(string baseUrl, SessionStore? sessionStore = null)
+        : this(new HttpClient { BaseAddress = new Uri(baseUrl) }, sessionStore) { }
 
-    internal ApiClient(HttpClient http) { _http = http; }
+    internal ApiClient(HttpClient http, SessionStore? sessionStore = null)
+    {
+        _http = http;
+        _sessionStore = sessionStore;
+    }
 
     private static readonly JsonSerializerOptions Json = new() { PropertyNameCaseInsensitive = true };
 
@@ -55,6 +61,19 @@ public class ApiClient
         var res = await SendAuthorized(HttpMethod.Delete, "/v1/auth/account");
         await EnsureSuccess(res);
         ClearTokens();
+    }
+
+    /// <summary>
+    /// Attempts to restore a previous session using a persisted refresh token.
+    /// Returns true if the session was successfully restored.
+    /// </summary>
+    public async Task<bool> RestoreSessionAsync(string refreshToken)
+    {
+        _refreshToken = refreshToken;
+        var success = await TryRefreshAsync();
+        if (!success)
+            _refreshToken = null;
+        return success;
     }
 
     // ── Characters ────────────────────────────────────────────────────────────
@@ -147,12 +166,14 @@ public class ApiClient
     {
         _accessToken = auth.AccessToken;
         _refreshToken = auth.RefreshToken;
+        _sessionStore?.Save(auth.RefreshToken);
     }
 
     private void ClearTokens()
     {
         _accessToken = null;
         _refreshToken = null;
+        _sessionStore?.Clear();
     }
 
     private static async Task<T> Deserialize<T>(HttpResponseMessage res)

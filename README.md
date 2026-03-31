@@ -56,6 +56,9 @@ cd server-tests/ApiTests && dotnet test
 
 ## Project Docs
 
+### Project-wide
+- [Maintainer Guide](docs/maintainer.md)
+
 ### Server
 - [Overview](server/docs/overview.md)
 - [API Reference](server/docs/api.md)

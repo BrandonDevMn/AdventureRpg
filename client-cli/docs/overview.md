@@ -18,6 +18,7 @@ client-cli/
     Models.cs             — response records (Character, Item, FishingResult, etc.)
   Services/
     ApiClient.cs          — HTTP client wrapping all server API calls
+    SessionStore.cs       — persists refresh token to ~/.adventurerpg/session
   Screens/
     WelcomeScreen.cs      — title screen, register and login
     CharacterSelectScreen.cs — list, create and select characters

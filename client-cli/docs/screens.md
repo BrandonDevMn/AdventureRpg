@@ -5,6 +5,10 @@ The UI is split into three screen classes. `Program.cs` orchestrates navigation 
 ## Navigation Flow
 
 ```
+Startup
+  ├── Saved session found → RestoreSessionAsync → CharacterSelectScreen (welcome skipped)
+  └── No saved session    → WelcomeScreen
+
 WelcomeScreen
   ├── Register → CharacterSelectScreen
   ├── Login    → CharacterSelectScreen

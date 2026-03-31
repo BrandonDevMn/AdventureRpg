@@ -7,16 +7,27 @@ var config = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json")
     .Build();
 
-var api = new ApiClient(config["ServerUrl"]!);
+var sessionStore = new SessionStore();
+var api = new ApiClient(config["ServerUrl"]!, sessionStore);
 var welcome = new WelcomeScreen(api);
 var characterSelect = new CharacterSelectScreen(api);
 var game = new GameScreen(api);
 
+// Try to restore a previous session from disk
+var savedToken = sessionStore.Load();
+if (savedToken is not null)
+{
+    await AnsiConsole.Status()
+        .StartAsync("Restoring session...", _ => api.RestoreSessionAsync(savedToken));
+}
+
 while (true)
 {
-    // Welcome — register or login
-    var loggedIn = await welcome.ShowAsync();
-    if (!loggedIn) break;
+    if (!api.IsLoggedIn)
+    {
+        var loggedIn = await welcome.ShowAsync();
+        if (!loggedIn) break;
+    }
 
     // Character select loop
     while (api.IsLoggedIn)
