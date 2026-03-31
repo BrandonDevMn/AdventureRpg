@@ -1,32 +1,27 @@
-using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using AdventureRpg.Services;
+using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AdventureRpg.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
-public class FishingController : ControllerBase
+[Authorize]
+[ApiVersion("1.0")]
+[Route("v{version:apiVersion}/fishing")]
+public class FishingController(IFishingService fishingService, ICharacterService characterService) : ControllerBase
 {
-    private readonly IFishingService _fishingService;
-    private readonly ICharacterService _characterService;
+    private string UserId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
-    public FishingController(IFishingService fishingService, ICharacterService characterService)
-    {
-        _fishingService = fishingService;
-        _characterService = characterService;
-    }
-
-    /// <summary>
-    /// Cast the fishing line for a character. Returns the dice roll result and any fish caught.
-    /// </summary>
     [HttpPost("{characterId:guid}/cast")]
     public IActionResult Cast(Guid characterId)
     {
-        var character = _characterService.GetById(characterId);
+        var character = characterService.GetById(characterId, UserId);
         if (character is null)
             return NotFound(new { message = "Character not found." });
 
-        var result = _fishingService.Cast(character);
+        var result = fishingService.Cast(character);
         return Ok(result);
     }
 }

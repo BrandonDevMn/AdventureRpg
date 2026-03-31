@@ -1,36 +1,36 @@
-using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using AdventureRpg.DTOs;
 using AdventureRpg.Services;
+using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AdventureRpg.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
-public class CharacterController : ControllerBase
+[Authorize]
+[ApiVersion("1.0")]
+[Route("v{version:apiVersion}/character")]
+public class CharacterController(ICharacterService characterService) : ControllerBase
 {
-    private readonly ICharacterService _characterService;
-
-    public CharacterController(ICharacterService characterService)
-    {
-        _characterService = characterService;
-    }
+    private string UserId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
     [HttpPost]
     public IActionResult Create([FromBody] CreateCharacterRequest request)
     {
-        var character = _characterService.Create(request);
+        var character = characterService.Create(request, UserId);
         return CreatedAtAction(nameof(GetById), new { id = character.Id }, character);
     }
 
     [HttpGet("{id:guid}")]
     public IActionResult GetById(Guid id)
     {
-        var character = _characterService.GetById(id);
+        var character = characterService.GetById(id, UserId);
         if (character is null)
             return NotFound();
         return Ok(character);
     }
 
     [HttpGet]
-    public IActionResult GetAll() => Ok(_characterService.GetAll());
+    public IActionResult GetAll() => Ok(characterService.GetAll(UserId));
 }

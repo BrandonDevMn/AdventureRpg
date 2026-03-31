@@ -6,9 +6,9 @@ namespace AdventureRpg.Services;
 
 public interface ICharacterService
 {
-    Character Create(CreateCharacterRequest request);
-    Character? GetById(Guid id);
-    IEnumerable<Character> GetAll();
+    Character Create(CreateCharacterRequest request, string userId);
+    Character? GetById(Guid id, string userId);
+    IEnumerable<Character> GetAll(string userId);
 }
 
 public class CharacterService(AppDbContext db) : ICharacterService
@@ -21,7 +21,7 @@ public class CharacterService(AppDbContext db) : ICharacterService
         { CharacterClass.Ranger,   (str: 7,  intel: 5,  agi: 9)  },
     };
 
-    public Character Create(CreateCharacterRequest request)
+    public Character Create(CreateCharacterRequest request, string userId)
     {
         var stats = BaseStats[request.Class];
         var character = new Character
@@ -30,16 +30,17 @@ public class CharacterService(AppDbContext db) : ICharacterService
             Class = request.Class,
             Strength = stats.str,
             Intelligence = stats.intel,
-            Agility = stats.agi
+            Agility = stats.agi,
+            UserId = userId
         };
         db.Characters.Add(character);
         db.SaveChanges();
         return character;
     }
 
-    public Character? GetById(Guid id) =>
-        db.Characters.Find(id);
+    public Character? GetById(Guid id, string userId) =>
+        db.Characters.FirstOrDefault(c => c.Id == id && c.UserId == userId);
 
-    public IEnumerable<Character> GetAll() =>
-        db.Characters.ToList();
+    public IEnumerable<Character> GetAll(string userId) =>
+        db.Characters.Where(c => c.UserId == userId).ToList();
 }

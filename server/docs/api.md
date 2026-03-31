@@ -2,21 +2,53 @@
 
 Base URL: `http://localhost:5000`
 
+All endpoints except auth require an `Authorization: Bearer <token>` header. See [Auth](auth.md) for how to obtain a token.
+
+---
+
+## Auth
+
+### Register
+`POST /v1/auth/register`
+
+**Request body:**
+```json
+{ "email": "hero@adventure.com", "password": "mysecret" }
+```
+
+**Response `200 OK`:**
+```json
+{ "token": "eyJhbGci...", "userId": "a1b2c3...", "expiresAt": "2026-03-31T02:00:00Z" }
+```
+
+**Response `400 Bad Request`:** identity validation errors
+
+---
+
+### Login
+`POST /v1/auth/login`
+
+**Request body:**
+```json
+{ "email": "hero@adventure.com", "password": "mysecret" }
+```
+
+**Response `200 OK`:** same as register
+
+**Response `401 Unauthorized`:** invalid credentials
+
 ---
 
 ## Characters
 
 ### Create Character
-`POST /api/character`
+`POST /v1/character`
 
-Creates a new character. Stats are assigned automatically based on class.
+Creates a character owned by the authenticated user.
 
 **Request body:**
 ```json
-{
-  "name": "Aldric",
-  "class": 0
-}
+{ "name": "Aldric", "class": 0 }
 ```
 
 `class` values: `0` = Warrior, `1` = Mage, `2` = Rogue, `3` = Ranger
@@ -31,37 +63,38 @@ Creates a new character. Stats are assigned automatically based on class.
   "strength": 10,
   "intelligence": 4,
   "agility": 6,
-  "createdAt": "2026-03-30T00:00:00Z"
+  "userId": "u1...",
+  "createdAt": "2026-03-31T00:00:00Z"
 }
 ```
 
 ---
 
 ### Get Character
-`GET /api/character/{id}`
+`GET /v1/character/{id}`
 
-Returns a single character by ID.
+Returns the character only if it belongs to the authenticated user.
 
-**Response `200 OK`:** Character object (see above)
-**Response `404 Not Found`:** Character does not exist
+**Response `200 OK`:** character object
+**Response `404 Not Found`:** not found or belongs to another user
 
 ---
 
-### List All Characters
-`GET /api/character`
+### List Characters
+`GET /v1/character`
 
-Returns all characters.
+Returns all characters belonging to the authenticated user.
 
-**Response `200 OK`:** Array of character objects
+**Response `200 OK`:** array of character objects
 
 ---
 
 ## Fishing
 
 ### Cast Line
-`POST /api/fishing/{characterId}/cast`
+`POST /v1/fishing/{characterId}/cast`
 
-Rolls the dice and attempts to catch a fish. On success, the caught item is added to the character's inventory automatically.
+Rolls the dice and attempts to catch a fish. On success, the item is added to the character's inventory automatically.
 
 **Response `200 OK` (miss):**
 ```json
@@ -91,14 +124,14 @@ Rolls the dice and attempts to catch a fish. On success, the caught item is adde
 }
 ```
 
-**Response `404 Not Found`:** Character does not exist
+**Response `404 Not Found`:** character not found or belongs to another user
 
 ---
 
 ## Inventory
 
 ### Get Inventory
-`GET /api/inventory/{characterId}`
+`GET /v1/inventory/{characterId}`
 
 Returns all items in a character's inventory.
 
@@ -110,13 +143,13 @@ Returns all items in a character's inventory.
     {
       "id": "d4e5f6...",
       "name": "Perch",
-      "type": 0,
+      "type": "Fish",
       "description": "A common river fish.",
       "rarity": 1,
-      "acquiredAt": "2026-03-30T00:00:00Z"
+      "acquiredAt": "2026-03-31T00:00:00Z"
     }
   ]
 }
 ```
 
-**Response `404 Not Found`:** Character does not exist
+**Response `404 Not Found`:** character not found or belongs to another user

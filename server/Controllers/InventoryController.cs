@@ -1,29 +1,27 @@
-using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using AdventureRpg.Services;
+using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AdventureRpg.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
-public class InventoryController : ControllerBase
+[Authorize]
+[ApiVersion("1.0")]
+[Route("v{version:apiVersion}/inventory")]
+public class InventoryController(IInventoryService inventoryService, ICharacterService characterService) : ControllerBase
 {
-    private readonly IInventoryService _inventoryService;
-    private readonly ICharacterService _characterService;
-
-    public InventoryController(IInventoryService inventoryService, ICharacterService characterService)
-    {
-        _inventoryService = inventoryService;
-        _characterService = characterService;
-    }
+    private string UserId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
     [HttpGet("{characterId:guid}")]
     public IActionResult GetInventory(Guid characterId)
     {
-        var character = _characterService.GetById(characterId);
+        var character = characterService.GetById(characterId, UserId);
         if (character is null)
             return NotFound(new { message = "Character not found." });
 
-        var items = _inventoryService.GetInventory(characterId);
+        var items = inventoryService.GetInventory(characterId);
         return Ok(new { characterId, items });
     }
 }

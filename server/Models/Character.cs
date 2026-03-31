@@ -9,5 +9,6 @@ public class Character
     public int Strength { get; set; }
     public int Intelligence { get; set; }
     public int Agility { get; set; }
+    public string UserId { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

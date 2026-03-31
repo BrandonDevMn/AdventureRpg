@@ -1,0 +1,31 @@
+Summary
+  Generated on: 03/31/2026 - 02:05:49
+  Coverage date: 03/31/2026 - 02:05:47
+  Parser: Cobertura
+  Assemblies: 1
+  Classes: 9
+  Files: 9
+  Line coverage: 98.8%
+  Covered lines: 174
+  Uncovered lines: 2
+  Coverable lines: 176
+  Total lines: 383
+  Branch coverage: 84% (21 of 25)
+  Covered branches: 21
+  Total branches: 25
+  Method coverage: 100% (30 of 30)
+  Full method coverage: 93.3% (28 of 30)
+  Covered methods: 30
+  Fully covered methods: 28
+  Total methods: 30
+
+AdventureRpg                                     98.8%
+  AdventureRpg.Controllers.AuthController         100%
+  AdventureRpg.Controllers.CharacterController    100%
+  AdventureRpg.Controllers.FishingController      100%
+  AdventureRpg.Controllers.InventoryController    100%
+  AdventureRpg.Data.AppDbContext                  100%
+  AdventureRpg.Services.CharacterService          100%
+  AdventureRpg.Services.FishingService           97.2%
+  AdventureRpg.Services.InventoryService          100%
+  AdventureRpg.Services.TokenService              100%
